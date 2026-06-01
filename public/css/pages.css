@@ -69,6 +69,27 @@
 .portfolio-carousel .indicator { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.45); border: none; cursor: pointer; }
 .portfolio-carousel .indicator.active { background: #fff; }
 
+/* Order badge on portfolio items */
+.portfolio-item__order {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  z-index: 6;
+}
+.carousel-order {
+  display: inline-block;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.9);
+  margin-left: 8px;
+  opacity: 0.95;
+}
+
 @media (max-width: 1100px) {
   .portfolio-carousel { max-width: 1000px; }
   .portfolio-carousel .carousel-slide img { aspect-ratio: 4/3; }

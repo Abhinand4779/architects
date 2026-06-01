@@ -10,7 +10,7 @@ const defaultProjects = [
     title: 'Modern Villa Kochi',
     category: 'exterior',
     description: 'A contemporary luxury villa featuring open spaces, natural light, and a seamless blend of indoor-outdoor living.',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1200&q=85',
+    image: './assets/WhatsApp Image 2026-05-30 at 10.42.42 PM.jpeg',
     location: 'Kochi, Kerala',
     year: '2026'
   },

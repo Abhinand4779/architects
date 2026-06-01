@@ -8,17 +8,52 @@ window.addEventListener('DOMContentLoaded', () => {
   // Load admin projects from localStorage
   const stored = getProjects();
 
+  // If user has projects saved in localStorage, they may include an older image
+  // for `proj-1`. Override it here so the new asset is used immediately.
+  const storedFixed = (stored || []).map(p => {
+    if (p && p.id === 'proj-1') {
+      return { ...p, image: './assets/WhatsApp Image 2026-05-30 at 10.42.42 PM.jpeg' };
+    }
+    return p;
+  });
+
   // Include recent works placed in /assets (added by user) as high-visibility featured items.
-  // If you add more assets, update this list or automate in a build step.
-  const assetImages = [
+  // This list includes newly added phone images and photoX files. Filenames that
+  // match common AI/generated patterns are automatically excluded.
+  const rawAssetImages = [
     './assets/photo7.jpeg',
     './assets/photo6.jpeg',
     './assets/photo5.jpeg',
     './assets/photo4.jpeg',
     './assets/photo3.jpeg',
     './assets/photo2.jpeg',
-    './assets/photo1.jpeg'
+    './assets/photo1.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.31 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.32 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.33 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.34 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.35 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.36 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.37 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.38 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.39 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.40 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.43 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.44 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.45 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.46 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.47 PM.jpeg',
+    './assets/WhatsApp Image 2026-05-30 at 10.42.48 PM.jpeg'
   ];
+
+  // Filter out likely AI/generated files by filename patterns (case-insensitive)
+  const aiPatterns = ['ai', 'generated', 'image.png'];
+  const assetImages = rawAssetImages.filter(p => {
+    const name = p.split('/').pop().toLowerCase();
+    // exclude logo and known single-file placeholders
+    if (name.includes('logo') || name.includes('removebg') || name === 'image.png') return false;
+    return !aiPatterns.some(pat => name.includes(pat));
+  });
 
   const assetProjects = assetImages.map((src, idx) => ({
     id: `asset-${idx}`,
@@ -27,11 +62,22 @@ window.addEventListener('DOMContentLoaded', () => {
     description: 'Showcase of our recent work',
     image: src,
     location: 'Ernakulam',
-    year: new Date().getFullYear()
+    year: new Date().getFullYear(),
+    order: idx + 1
   }));
 
   // Merge assets first so they display prominently, then admin projects
-  allProjects = [...assetProjects, ...stored];
+  allProjects = [...assetProjects, ...storedFixed];
+
+  // Remove specific displayed items by their visible order numbers (1-based).
+  // This lets you quickly hide items shown as "24,25,26,27,28,29" in the UI.
+  const excludedOrders = [24, 25, 26, 27, 28, 29];
+  if (Array.isArray(excludedOrders) && excludedOrders.length) {
+    allProjects = allProjects.filter((p, idx) => {
+      const displayOrder = p.order || (idx + 1);
+      return !excludedOrders.includes(displayOrder);
+    });
+  }
 
   // Render a featured carousel for top recent works, then the full grid
   renderCarousel(allProjects.slice(0, 4));
@@ -57,7 +103,7 @@ function renderCarousel(items) {
         <div class="carousel-slide" data-id="${p.id}">
           <img src="${p.image}" alt="${p.title}">
           <div class="carousel-caption">
-            <h3>${p.title}</h3>
+            <h3>${p.title} <span class="carousel-order">#${p.order || ''}</span></h3>
             <div class="carousel-meta">${p.location}, ${p.year}</div>
           </div>
         </div>
@@ -124,6 +170,7 @@ function renderPortfolio(projectsToRender) {
   container.innerHTML = projectsToRender.map((p, i) => `
     <article class="portfolio-item ${i < 4 ? 'featured' : ''}" onclick="openLightbox('${p.id}')">
       <img src="${p.image}" alt="${p.title}">
+      <div class="portfolio-item__order">${p.order || (i + 1)}</div>
       <div class="portfolio-item__overlay">
         <div class="portfolio-item__category">${formatCategory(p.category)}</div>
         <h3 class="portfolio-item__title">${p.title}</h3>
